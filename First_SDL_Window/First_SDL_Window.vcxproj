@@ -23,6 +23,7 @@
     <ProjectGuid>{BCC62524-6E0A-4125-9E1B-CCF6A4485CFF}</ProjectGuid>
     <RootNamespace>FirstSDLWindow</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>First_SDL_Window</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
