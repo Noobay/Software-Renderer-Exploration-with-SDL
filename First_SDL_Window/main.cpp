@@ -1,12 +1,13 @@
 #include "SDL.h" 
 #include <random>
 
-void putpixel(SDL_Surface* surface, int x, int y, Uint32 pixel);
+void PutPixel(SDL_Surface* surface, int x, int y, Uint32 pixel);
+
+const Uint16 IMAGE_WIDTH = 640;
+const Uint16 IMAGE_HEIGHT = 480;
 
 int main(int argc, char* argv[])
 {
-	const Uint16 IMAGE_WIDTH = 640;
-	const Uint16 IMAGE_HEIGHT = 480;
 
 	SDL_Init(SDL_INIT_VIDEO);
 
@@ -14,24 +15,15 @@ int main(int argc, char* argv[])
 		"SDL2Test",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
-		640,
-		480,
+		IMAGE_WIDTH,
+		IMAGE_HEIGHT,
 		0
 	);
 
 	SDL_Surface *screen = SDL_GetWindowSurface(window);
 	SDL_FillRect(screen, 0, 0);
 
-	for (int columnIndex = 0; columnIndex < IMAGE_WIDTH; ++columnIndex) {
-		for (int rowIndex = 0; rowIndex < IMAGE_HEIGHT; ++rowIndex) {
-
-			int r = rand() % 255;
-			int g = rand() % 255;
-			int b = rand() % 255;
-
-			putpixel(screen, columnIndex, rowIndex, SDL_MapRGB(screen->format, r, g, b));
-		}
-	}
+	DrawGraphics(screen);
 
 	SDL_UpdateWindowSurface(window);
 
@@ -43,7 +35,21 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-void putpixel(SDL_Surface* surface, int x, int y, Uint32 pixel)
+void DrawGraphics(SDL_Surface *surface) {
+
+	for (int columnIndex = 0; columnIndex < IMAGE_WIDTH; ++columnIndex) {
+		for (int rowIndex = 0; rowIndex < IMAGE_HEIGHT; ++rowIndex) {
+
+			int r = rand() % 255;
+			int g = rand() % 255;
+			int b = rand() % 255;
+
+			PutPixel(surface, columnIndex, rowIndex, SDL_MapRGB(surface->format, r, g, b));
+		}
+	}
+}
+
+void PutPixel(SDL_Surface* surface, int x, int y, Uint32 pixel)
 {
 	int bpp = surface->format->BytesPerPixel;
 	/* Here p is the address to the pixel we want to set */
