@@ -1,10 +1,9 @@
-#include "SDL.h" 
-#include <random>
-
-void PutPixel(SDL_Surface* surface, int x, int y, Uint32 pixel);
+#include "main.h"
 
 const Uint16 IMAGE_WIDTH = 640;
 const Uint16 IMAGE_HEIGHT = 480;
+
+const int GRID_CELL_SIZE = 3;
 
 int main(int argc, char* argv[])
 {
@@ -35,16 +34,24 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
+Vector2 GetGridPosition(const Vector2 &position)
+{
+	return Vector2((position.x / GRID_CELL_SIZE), (position.y / GRID_CELL_SIZE));
+}
+
 void DrawGraphics(SDL_Surface *surface) {
 
 	for (int columnIndex = 0; columnIndex < IMAGE_WIDTH; ++columnIndex) {
 		for (int rowIndex = 0; rowIndex < IMAGE_HEIGHT; ++rowIndex) {
 
-			int r = rand() % 255;
-			int g = rand() % 255;
-			int b = rand() % 255;
+			Vector2 position = Vector2(columnIndex, rowIndex);
 
-			PutPixel(surface, columnIndex, rowIndex, SDL_MapRGB(surface->format, r, g, b));
+			Vector2 gridBoundPosition = GetGridPosition(position);
+
+			Vector2 cellBoundPosition = gridBoundPosition - Vector2(round(gridBoundPosition.x), round(gridBoundPosition.y));
+
+			float distance = Vector2::Distance(position, cellBoundPosition);
+			PutPixel(surface, columnIndex, rowIndex, SDL_MapRGB(surface->format, distance, distance, distance));
 		}
 	}
 }
