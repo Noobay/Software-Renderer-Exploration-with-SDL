@@ -37,4 +37,24 @@ struct Vector2
 	{
 		return Vector2(x * other, y * other);
 	}
+
+	inline Vector2 operator / (const float other) const
+	{
+		return Vector2(x / other, y / other);
+	}
+
+	inline Vector2 Round()
+	{
+		return Vector2(round(x), round(y));
+	}
+
+	inline float Length() const
+	{
+		return sqrt(pow(x, 2.0f) + pow(y, 2.0f));
+	}
+
+	inline Vector2 GeometricInverse() const
+	{
+		return Vector2(1.0f / x, 1.0f / y);
+	}
 };
