@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 
 		currentTimeFloatSec = chrono::duration_cast<FloatSeconds>(chrono::high_resolution_clock::now().time_since_epoch());
 
-		DrawSimpleLine(screen, Vector2(100, 200), Vector2(300, 400), 0.01f, lineColor);
+		DrawLineSimple(screen, Vector2(100, 200), Vector2(300, 400), 0.01f, lineColor);
 
 		SDL_UpdateWindowSurface(window);
 	}
@@ -56,7 +56,7 @@ Vector2 GetGridPosition(const Vector2 &position)
 	return Vector2((position.x / GRID_CELL_SIZE), (position.y / GRID_CELL_SIZE));
 }
 
-void DrawSimpleLine(SDL_Surface* surface, Vector2 point0, Vector2 point1, float stepSize, Uint32 color)
+void DrawLineSimple(SDL_Surface* surface, Vector2 point0, Vector2 point1, float stepSize, Uint32 color)
 {
 
 	for (float step = 0.0f; step < 1.0f; step += stepSize)
