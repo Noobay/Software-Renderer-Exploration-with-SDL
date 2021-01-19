@@ -40,7 +40,6 @@ int main(int argc, char* argv[])
 
 		currentTimeFloatSec = chrono::duration_cast<FloatSeconds>(chrono::high_resolution_clock::now().time_since_epoch());
 
-		DrawGraphics(screen, currentTimeFloatSec.count());
 		DrawSimpleLine(screen, Vector2(100, 200), Vector2(300, 400), 0.01f, lineColor);
 
 		SDL_UpdateWindowSurface(window);
@@ -66,67 +65,6 @@ void DrawSimpleLine(SDL_Surface* surface, Vector2 point0, Vector2 point1, float 
 		int y = point0.y + (point1.y - point0.y) * step;
 
 		PutPixel(surface, x, y, color);
-	}
-}
-
-void DrawGraphics(SDL_Surface *surface, float currentTimeSec) {
-
-	Vector2 imageDimensions = Vector2(IMAGE_WIDTH, IMAGE_HEIGHT);
-	Vector2 imageCenter = imageDimensions / 2.0f;
-	Vector2 zero = Vector2(0.0, 0.0);
-
-
-	for (int columnIndex = 0; columnIndex < IMAGE_WIDTH; ++columnIndex) {
-		for (int rowIndex = 0; rowIndex < IMAGE_HEIGHT; ++rowIndex) {
-
-			Vector2 position = Vector2(columnIndex, rowIndex);
-
-			Vector2 centeredPosition = (position - (imageDimensions * 0.5f)) / imageDimensions.y;
-			Vector2 gridBoundPosition = GetGridPosition(centeredPosition);
-
-			Vector2 cellBoundPosition = gridBoundPosition - gridBoundPosition.Round();
-
-			float redIntensity = 0.0f;
-			float blueIntensity = 0.0f;
-
-			for (int targetIndex = 0; targetIndex < TARGET_COUNT; ++targetIndex)
-			{
-				float f_targetIndex = float(targetIndex);
-
-				float trigOffset = (PI / float(TARGET_COUNT)) * f_targetIndex;
-				Vector2 targetPosition = Vector2(sinf(currentTimeSec + trigOffset) * 0.51f + tanf(f_targetIndex + trigOffset), cosf(currentTimeSec + trigOffset) * 0.1f + sinf(f_targetIndex + trigOffset));
-				Vector2 gridBoundTargetPosition = GetGridPosition(targetPosition);
-				Vector2 edgeBoundPosition = Vector2(gridBoundTargetPosition.x, gridBoundTargetPosition.y);
-
-				float distanceToTarget = Vector2::Distance(gridBoundPosition, gridBoundPosition.Round()) + Vector2::Distance(gridBoundTargetPosition, edgeBoundPosition);
-
-				redIntensity += (cellBoundPosition.GeometricInverse() * (GRID_CELL_SIZE / (distanceToTarget * 9.5f))).Length() * GRID_CELL_SIZE;
-			}
-
-			for (int targetIndex = 0; targetIndex < TARGET_COUNT; ++targetIndex)
-			{
-				float f_targetIndex = float(targetIndex);
-
-				float trigOffset = (PI / float(TARGET_COUNT)) * f_targetIndex;
-
-				Vector2 targetPosition = Vector2(sinf(currentTimeSec + trigOffset) * 0.51f + sinf(f_targetIndex + trigOffset), tanf(currentTimeSec + trigOffset) * 0.1 + sinf(f_targetIndex + trigOffset));
-				Vector2 gridBoundTargetPosition = GetGridPosition(targetPosition);
-				Vector2 edgeBoundPosition = Vector2(gridBoundTargetPosition.x, gridBoundTargetPosition.y);
-
-				float distanceToTarget = Vector2::Distance(gridBoundPosition, gridBoundTargetPosition.Round()) + Vector2::Distance(gridBoundPosition, edgeBoundPosition);
-
-				blueIntensity += (cellBoundPosition.GeometricInverse() * (GRID_CELL_SIZE / (distanceToTarget * 15.5f))).Length() * GRID_CELL_SIZE;
-
-			}
-
-
-			float step = smoothstep(0.2f, 1.0f, blueIntensity + redIntensity) * 255.0f;
-
-			redIntensity *= 255.0f;
-			blueIntensity *= 255.0f;
-			step = redIntensity - step;
-			PutPixel(surface, columnIndex, rowIndex, SDL_MapRGB(surface->format, step + redIntensity, step, step + blueIntensity));
-		}
 	}
 }
 
