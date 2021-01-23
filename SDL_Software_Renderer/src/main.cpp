@@ -32,7 +32,9 @@ int main(int argc, char* argv[])
 	SDL_Surface* screen = SDL_GetWindowSurface(window);
 	SDL_FillRect(screen, 0, 0);
 	
-	const Uint32 lineColor = SDL_MapRGB(screen->format, 255, 255, 255); // white color
+	const Uint32 line1Color = SDL_MapRGB(screen->format, 255, 255, 255); // white color
+	const Uint32 line2Color = SDL_MapRGB(screen->format, 255, 0, 255); // pink color
+	const Uint32 line3Color = SDL_MapRGB(screen->format, 255, 0, 0); // red color
 
 	while ((currentTimeFloatSec.count() - startTimeMs) < 3.0f)
 	{
@@ -40,7 +42,9 @@ int main(int argc, char* argv[])
 
 		currentTimeFloatSec = chrono::duration_cast<FloatSeconds>(chrono::high_resolution_clock::now().time_since_epoch());
 
-		DrawLineSimple(screen, Vector2(100, 200), Vector2(300, 400), 0.01f, lineColor);
+		DrawLineSimple(screen, Vector2(350, 200), Vector2(400, 400), line1Color);
+		DrawLineSimple(screen, Vector2(150, 200), Vector2(350, 350), line2Color);
+		DrawLineSimple(screen, Vector2(100, 350), Vector2(425, 350), line3Color);
 
 		SDL_UpdateWindowSurface(window);
 	}
@@ -56,13 +60,45 @@ Vector2 GetGridPosition(const Vector2 &position)
 	return Vector2((position.x / GRID_CELL_SIZE), (position.y / GRID_CELL_SIZE));
 }
 
-void DrawLineSimple(SDL_Surface* surface, Vector2 point0, Vector2 point1, float stepSize, Uint32 color)
+void DrawLineSimple(SDL_Surface* surface, Vector2 point0, Vector2 point1, Uint32 color)
 {
+	float lengthX = point1.x - point0.x;
+	float lengthY = point1.y - point0.y;
 
-	for (float step = 0.0f; step < 1.0f; step += stepSize)
+	// The main issue with this method is that it is undefined where lengthX = 0 (i.e no vertical lines).
+	SDL_assert(lengthX != 0);
+
+	Vector2 from = Vector2(0.0, 0.0);
+	Vector2 to = Vector2(0.0, 0.0);
+
+	if (lengthX > 0)
 	{
-		int x = point0.x + (point1.x - point0.x) * step;
-		int y = point0.y + (point1.y - point0.y) * step;
+		from.x = point0.x;
+		to.x = point1.x;
+	}
+	else
+	{
+		from.x = point1.x;
+		to.x = point0.x;
+	}
+
+	if (lengthY > 0)
+	{
+		from.y = point0.y;
+		to.y = point1.y;
+	}
+	else
+	{
+		from.y = point1.y;
+		to.y = point0.y;
+	}
+
+	for (float x = from.x; x <= to.x; x++)
+	{
+		float deltaCurrentToOriginX = x - from.x;
+
+		float progressX = deltaCurrentToOriginX / lengthX;
+		int y = (float)(from.y * (1. - progressX)) + (to.y * progressX);
 
 		PutPixel(surface, x, y, color);
 	}
