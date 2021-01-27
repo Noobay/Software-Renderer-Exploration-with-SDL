@@ -3,11 +3,8 @@
 
 using namespace std;
 
-#define PI 3.14f
 #define IMAGE_WIDTH 640
 #define IMAGE_HEIGHT 480
-#define GRID_CELL_SIZE 0.1f
-#define TARGET_COUNT 3
 
 int main(int argc, char* argv[])
 {
@@ -52,11 +49,6 @@ int main(int argc, char* argv[])
 	SDL_Quit();
 
 	return 0;
-}
-
-Vector2 GetGridPosition(const Vector2 &position)
-{
-	return Vector2((position.x / GRID_CELL_SIZE), (position.y / GRID_CELL_SIZE));
 }
 
 void DrawLineSimple(SDL_Surface* surface, Vector2 point0, Vector2 point1, Uint32 color)
