@@ -9,8 +9,6 @@ using namespace std;
 #define GRID_CELL_SIZE 0.1f
 #define TARGET_COUNT 3
 
-typedef chrono::duration<float> FloatSeconds;
-
 int main(int argc, char* argv[])
 {
 
@@ -26,8 +24,10 @@ int main(int argc, char* argv[])
 	);
 
 
-	FloatSeconds currentTimeFloatSec = chrono::duration_cast<FloatSeconds>(chrono::high_resolution_clock::now().time_since_epoch());
-	float startTimeMs = currentTimeFloatSec.count();
+	chrono::seconds runDuration = chrono::seconds(3);
+
+	chrono::high_resolution_clock::time_point startTime = chrono::high_resolution_clock::now();
+	chrono::high_resolution_clock::time_point currentTime = chrono::high_resolution_clock::now();
 
 	SDL_Surface* screen = SDL_GetWindowSurface(window);
 	SDL_FillRect(screen, 0, 0);
@@ -36,11 +36,10 @@ int main(int argc, char* argv[])
 	const Uint32 line2Color = SDL_MapRGB(screen->format, 255, 0, 255); // pink color
 	const Uint32 line3Color = SDL_MapRGB(screen->format, 255, 0, 0); // red color
 
-	while ((currentTimeFloatSec.count() - startTimeMs) < 3.0f)
+	while ((currentTime - startTime) < runDuration)
 	{
-		cout << (currentTimeFloatSec.count() - startTimeMs) << endl;
-
-		currentTimeFloatSec = chrono::duration_cast<FloatSeconds>(chrono::high_resolution_clock::now().time_since_epoch());
+		cout << (currentTime - startTime).count() << endl;
+		currentTime = chrono::high_resolution_clock::now();
 
 		DrawLineSimple(screen, Vector2(350, 200), Vector2(400, 400), line1Color);
 		DrawLineSimple(screen, Vector2(150, 200), Vector2(350, 350), line2Color);
