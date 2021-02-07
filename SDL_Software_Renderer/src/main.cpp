@@ -1,4 +1,4 @@
-#include "main.h"
+﻿#include "main.h"
 
 using namespace std;
 
@@ -92,6 +92,45 @@ void DrawLineSimple(SDL_Surface* surface, Vector2 point0, Vector2 point1, Uint32
 
 		PutPixel(surface, x, y, color);
 	}
+}
+
+void DrawLineAdvanced(SDL_Surface* surface, Vector2 point0, Vector2 point1, Uint32 color)
+{
+	bool steep = false;
+
+	float diffX = point0.x - point1.x;
+	float diffY = point0.y - point1.y;
+
+	if (abs(diffX) < abs(diffY))
+	{
+		// This line prevents the difference over X to be equal to 0, unless both differences over X and Y are 0 and no line should be drawn anyway-
+		// resolving the case where it is undefined.
+		swap(point0.x, point0.y);
+		swap(point1.x, point1.y);
+
+		steep = true;
+	}
+
+	if (diffX > 0)
+	{
+		swap(point0, point1);
+	}
+
+	for (int x = point0.x; x <= point1.x; ++x)
+	{
+		float progressX = (x - point0.x) / (point1.x - point0.x);
+		float y = point0.y * (1.0f - progressX) + (point1.y * progressX);
+
+		if (steep)
+		{
+			PutPixel(surface, y, x, color);
+		}
+		else
+		{
+			PutPixel(surface, x, y, color);
+		}
+	}
+
 }
 
 void PutPixel(SDL_Surface* surface, int x, int y, Uint32 pixel)
