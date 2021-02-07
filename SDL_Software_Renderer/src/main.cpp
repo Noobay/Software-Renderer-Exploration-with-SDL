@@ -30,16 +30,14 @@ int main(int argc, char* argv[])
 	
 	const Uint32 line1Color = SDL_MapRGB(screen->format, 255, 255, 255); // white color
 	const Uint32 line2Color = SDL_MapRGB(screen->format, 255, 0, 255); // pink color
-	const Uint32 line3Color = SDL_MapRGB(screen->format, 255, 0, 0); // red color
 
 	while ((currentTime - startTime) < runDuration)
 	{
 		cout << (currentTime - startTime).count() << endl;
 		currentTime = chrono::high_resolution_clock::now();
 
-		DrawLineSimple(screen, Vector2(350, 200), Vector2(400, 400), line1Color);
-		DrawLineSimple(screen, Vector2(150, 200), Vector2(350, 350), line2Color);
-		DrawLineSimple(screen, Vector2(100, 350), Vector2(425, 350), line3Color);
+		DrawLineSimple(screen, Vector2(50, 0), Vector2(50, 400), line1Color);
+		DrawLineAdvanced(screen, Vector2(100, 0), Vector2(100, 400), line2Color);
 
 		SDL_UpdateWindowSurface(window);
 	}
@@ -52,11 +50,10 @@ int main(int argc, char* argv[])
 
 void DrawLineSimple(SDL_Surface* surface, Vector2 point0, Vector2 point1, Uint32 color)
 {
+	// The main issue with this method is that it is undefined where lengthX = 0 (i.e no vertical lines).
+
 	float lengthX = point1.x - point0.x;
 	float lengthY = point1.y - point0.y;
-
-	// The main issue with this method is that it is undefined where lengthX = 0 (i.e no vertical lines).
-	SDL_assert(lengthX != 0);
 
 	Vector2 from = Vector2(0.0, 0.0);
 	Vector2 to = Vector2(0.0, 0.0);
