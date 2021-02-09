@@ -108,7 +108,7 @@ void DrawLineAdvanced(SDL_Surface* surface, Vector2 point0, Vector2 point1, Uint
 		steep = true;
 	}
 
-	if (diffX > 0)
+	if (point0.x > point1.x)
 	{
 		swap(point0, point1);
 	}
