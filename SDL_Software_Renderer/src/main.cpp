@@ -113,9 +113,11 @@ void DrawLineAdvanced(SDL_Surface* surface, Vector2 point0, Vector2 point1, Uint
 		swap(point0, point1);
 	}
 
+	float lengthX = point1.x - point0.x;
+
 	for (int x = point0.x; x <= point1.x; ++x)
 	{
-		float progressX = (x - point0.x) / (point1.x - point0.x);
+		float progressX = (x - point0.x) / lengthX;
 		float y = point0.y * (1.0f - progressX) + (point1.y * progressX);
 
 		if (steep)
