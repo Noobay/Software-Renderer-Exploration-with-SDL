@@ -1,7 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <random>
-#include "SDL.h"
+#include <SDL.h>
 #include "vectors.h"
 #include "mathext.h"
 

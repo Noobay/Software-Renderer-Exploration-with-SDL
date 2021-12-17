@@ -2,8 +2,8 @@
 
 using namespace std;
 
-#define IMAGE_WIDTH 640
-#define IMAGE_HEIGHT 480
+const int IMAGE_WIDTH = 640;
+const int IMAGE_HEIGHT = 480;
 
 int main(int argc, char* argv[])
 {
@@ -27,17 +27,17 @@ int main(int argc, char* argv[])
 
 	SDL_Surface* screen = SDL_GetWindowSurface(window);
 	SDL_FillRect(screen, 0, 0);
-	
+
 	const Uint32 line1Color = SDL_MapRGB(screen->format, 255, 255, 255); // white color
 	const Uint32 line2Color = SDL_MapRGB(screen->format, 255, 0, 255); // pink color
 
 	while ((currentTime - startTime) < runDuration)
 	{
-		cout << (currentTime - startTime).count() << endl;
+ 		cout << (currentTime - startTime).count() << endl;
 		currentTime = chrono::high_resolution_clock::now();
-
-		DrawLineSimple(screen, Vector2(50, 0), Vector2(50, 400), line1Color);
-		DrawLineAdvanced(screen, Vector2(100, 0), Vector2(100, 400), line2Color);
+		
+		DrawLineSimple(screen, Vector2(15, 25), Vector2(65, 350), line1Color);
+		DrawLineAdvanced(screen, Vector2(15 , 25), Vector2(65, 350), line2Color);
 
 		SDL_UpdateWindowSurface(window);
 	}
@@ -85,9 +85,9 @@ void DrawLineSimple(SDL_Surface* surface, Vector2 point0, Vector2 point1, Uint32
 		float deltaCurrentToOriginX = x - from.x;
 
 		float progressX = deltaCurrentToOriginX / lengthX;
-		int y = (float)(from.y * (1. - progressX)) + (to.y * progressX);
+		float y = (from.y * (1.0f - progressX)) + (to.y * progressX);
 
-		PutPixel(surface, x, y, color);
+		PutPixel(surface, (int)x, (int)y, color);
 	}
 }
 
@@ -109,35 +109,33 @@ void DrawLineAdvanced(SDL_Surface* surface, Vector2 point0, Vector2 point1, Uint
 	}
 
 	if (point0.x > point1.x)
-	{
 		swap(point0, point1);
-	}
 
 	float lengthX = point1.x - point0.x;
 
-	for (int x = point0.x; x <= point1.x; ++x)
+	for (int x = (int)point0.x; x <= point1.x; ++x)
 	{
 		float progressX = (x - point0.x) / lengthX;
 		float y_float = point0.y * (1.0f - progressX) + (point1.y * progressX);
 		int y_rounded = (int)roundf(y_float);
 
 		if (steep)
-		{
 			PutPixel(surface, y_rounded, x, color);
-		}
 		else
-		{
 			PutPixel(surface, x, y_rounded, color);
-		}
 	}
 
 }
 
 void PutPixel(SDL_Surface* surface, int x, int y, Uint32 pixel)
 {
+
 	int bpp = surface->format->BytesPerPixel;
 	/* Here p is the address to the pixel we want to set */
-	Uint8* p = (Uint8*)surface->pixels + y * surface->pitch + x * bpp;
+
+	int offset = y * surface->pitch + x * bpp;
+
+	Uint8* p = (Uint8*)surface->pixels + offset;
 
 	switch (bpp) {
 		case 1:

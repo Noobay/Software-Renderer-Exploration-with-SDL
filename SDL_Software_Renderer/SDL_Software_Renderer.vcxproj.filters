@@ -4,6 +4,9 @@
     <Filter Include="src">
       <UniqueIdentifier>{17cca72d-20bf-48e8-98e9-c599f2cb3b3f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\importers">
+      <UniqueIdentifier>{30cfad87-e271-47fb-958e-263b0b283a86}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -11,6 +14,9 @@
     </ClCompile>
     <ClCompile Include="src\mathext.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\importers\obj_importer.cpp">
+      <Filter>src\importers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -22,6 +28,9 @@
     </ClInclude>
     <ClInclude Include="src\vectors.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\importers\asset_importer.h">
+      <Filter>src\importers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
