@@ -19,14 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\importers\obj_importer.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\mathext.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\importers\asset_importer.h" />
+    <ClInclude Include="src\importers\obj_importer.h" />
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\mathext.h" />
+    <ClInclude Include="src\vector3.h" />
     <ClInclude Include="src\vectors.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -1,4 +1,5 @@
 ﻿#include "main.h"
+#include "importers/obj_importer.h"
 
 using namespace std;
 
@@ -20,6 +21,13 @@ int main(int argc, char* argv[])
 	);
 
 
+	chrono::high_resolution_clock::time_point importStartTime = chrono::high_resolution_clock::now();
+	chrono::high_resolution_clock::time_point importCurrentTime = chrono::high_resolution_clock::now();
+	ObjImporter::OBJData* objData = ObjImporter::Import("D:\\SlowRepos\\Journey\\2D_Software_Renderer\\First SDL Window\\SDL_Software_Renderer\\assets\\Holodeck\\Holodeck.obj");
+	importCurrentTime = chrono::high_resolution_clock::now();
+	cout << "Import Time: " << (importCurrentTime - importStartTime).count() / 1000000000.0f << " seconds" << endl;
+	fgetc(stdin);
+
 	chrono::seconds runDuration = chrono::seconds(3);
 
 	chrono::high_resolution_clock::time_point startTime = chrono::high_resolution_clock::now();
@@ -31,15 +39,63 @@ int main(int argc, char* argv[])
 	const Uint32 line1Color = SDL_MapRGB(screen->format, 255, 255, 255); // white color
 	const Uint32 line2Color = SDL_MapRGB(screen->format, 255, 0, 255); // pink color
 
-	while ((currentTime - startTime) < runDuration)
+	float objScale = 0.1;
+
+	while (true)
 	{
- 		cout << (currentTime - startTime).count() << endl;
 		currentTime = chrono::high_resolution_clock::now();
 		
-		DrawLineSimple(screen, Vector2(15, 25), Vector2(65, 350), line1Color);
-		DrawLineAdvanced(screen, Vector2(15 , 25), Vector2(65, 350), line2Color);
+		int activeVertex = 0;
+
+		for (int modelIdx = 0; modelIdx < objData->modelCount; ++modelIdx)
+		{
+			ObjImporter::OBJModel activeModel = objData->models[modelIdx];
+			for (int bucketIdx = 0; bucketIdx < activeModel.bucketCount; ++bucketIdx)
+			{
+				ObjImporter::Vector3Bucket activeBucket = activeModel.vertexBuckets->at(bucketIdx);
+				for (int i = 0; i < ObjImporter::BUCKET_VERTEX_COUNT - 2 && activeVertex < activeModel.vertexCount - 2; ++i)
+				{
+					Vector3 objectSpaceVertex1 = activeBucket.values[i];
+					Vector3 objectSpaceVertex2 = activeBucket.values[i + 1];
+					Vector3 objectSpaceVertex3 = activeBucket.values[i + 2];
+
+					Vector3 screenSpaceVertex1 = Vector3(objectSpaceVertex1.x * objScale + (IMAGE_WIDTH / 2.0), 0.0f, objectSpaceVertex1.z * objScale + (IMAGE_HEIGHT / 2.0));
+					Vector3 screenSpaceVertex2 = Vector3(objectSpaceVertex2.x * objScale + (IMAGE_WIDTH / 2.0), 0.0f, objectSpaceVertex2.z * objScale + (IMAGE_HEIGHT / 2.0));
+					Vector3 screenSpaceVertex3 = Vector3(objectSpaceVertex3.x * objScale + (IMAGE_WIDTH / 2.0), 0.0f, objectSpaceVertex3.z * objScale + (IMAGE_HEIGHT / 2.0));
+
+					DrawLineAdvanced(screen, Vector2(screenSpaceVertex1.x, screenSpaceVertex1.z), Vector2(screenSpaceVertex2.x, screenSpaceVertex2.z), line2Color);
+					DrawLineAdvanced(screen, Vector2(screenSpaceVertex2.x, screenSpaceVertex2.z), Vector2(screenSpaceVertex3.x, screenSpaceVertex3.z), line2Color);
+					DrawLineAdvanced(screen, Vector2(screenSpaceVertex3.x, screenSpaceVertex3.z), Vector2(screenSpaceVertex1.x, screenSpaceVertex1.z), line2Color);
+
+					++activeVertex;
+				}
+			}
+		}
+
+		SDL_Event curEvents;
+		if (SDL_PollEvent(&curEvents)) {
+			if (curEvents.type == SDL_QUIT)
+				break;
+
+			//If a key was pressed
+			if (curEvents.type == SDL_KEYDOWN)
+			{
+				//Set the proper message surface
+				switch (curEvents.key.keysym.sym)
+				{
+					case SDLK_UP:
+						objScale += 0.01f;
+						break;
+					case SDLK_DOWN:
+						objScale -= 0.01f;
+						break;
+				}
+			}
+		}
 
 		SDL_UpdateWindowSurface(window);
+		SDL_FillRect(screen, 0, 0);
+
 	}
 
 	SDL_DestroyWindow(window);

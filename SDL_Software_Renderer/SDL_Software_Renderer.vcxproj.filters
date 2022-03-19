@@ -15,9 +15,6 @@
     <ClCompile Include="src\mathext.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\importers\obj_importer.cpp">
-      <Filter>src\importers</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main.h">
@@ -29,8 +26,11 @@
     <ClInclude Include="src\vectors.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\importers\asset_importer.h">
+    <ClInclude Include="src\importers\obj_importer.h">
       <Filter>src\importers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vector3.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

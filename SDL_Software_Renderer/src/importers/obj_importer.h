@@ -5,19 +5,17 @@
 
 class ObjImporter
 {
-	static const long BUCKET_VERTEX_COUNT = 128;
-	static const long MAX_MODELS = 8;
+public:
+	static const long BUCKET_VERTEX_COUNT = 2048;
+	static const long MAX_MODELS = 264;
 
 	struct Vector3Bucket { Vector3 values[BUCKET_VERTEX_COUNT]; };
 
-public:
 	struct OBJModel
 	{
 		std::vector<Vector3Bucket>* vertexBuckets = new std::vector<Vector3Bucket>();
 		long vertexCount = 0;
-		int vertexBucketCount = 0;
-
-		int vertexIndices[BUCKET_VERTEX_COUNT * 3] = {};
+		int bucketCount = 0;
 	};
 
 	struct OBJData
@@ -28,7 +26,7 @@ public:
 
 #pragma warning(push)
 #pragma warning(disable:4996)
-	static void Import(const char* filePath)
+	static OBJData* Import(const char* filePath)
 	{
 		const int lineIDSize = 2;
 		const int bufferSize = 256;
@@ -40,15 +38,13 @@ public:
 		OBJData* data = new OBJData();
 
 		OBJModel tmpModel;
-		tmpModel.vertexBuckets = new std::vector<Vector3Bucket>(128);
-
+		tmpModel.vertexBuckets->reserve(64);
+		std::vector<Vector3Bucket>::iterator bucketVertexIterator = tmpModel.vertexBuckets->begin();
 		Vector3Bucket tmpBucket;
+		Vector3 tmpVertex;
 
 		int tmpVertexCount = 0;
-		int tmpBucketVertexCount = 0;
-		int tmpBucketCount = 0;
-
-		Vector3 tmpVertex;
+		int tmpVertexInBucketCount = 0;
 
 		FILE* file = fopen(filePath, "r");
 		bool eofReached = false;
@@ -59,15 +55,17 @@ public:
 			{
 				if (tmpVertexCount != 0)
 				{
-					tmpModel.vertexBuckets->push_back(tmpBucket);
+					bucketVertexIterator = tmpModel.vertexBuckets->emplace(bucketVertexIterator, tmpBucket);
 					tmpModel.vertexCount = tmpVertexCount;
-					tmpModel.vertexBucketCount = tmpBucketCount;
+					tmpModel.bucketCount = tmpModel.vertexBuckets->size();
 
 					data->models[data->modelCount++] = tmpModel;
+					tmpModel.vertexBuckets = new std::vector<Vector3Bucket>();
 
 					tmpVertexCount = 0;
-					tmpBucketVertexCount = 0;
-					tmpBucketCount = 1;
+					tmpVertexInBucketCount = 0;
+
+					bucketVertexIterator = tmpModel.vertexBuckets->begin();
 				}
 			}
 			else if (strncmp(buffer, "vt", lineIDSize) == 0)
@@ -81,25 +79,26 @@ public:
 			else if (strncmp(buffer, "v ", lineIDSize) == 0)
 			{
 				sscanf(buffer + lineIDSize, "%f %f %f\n", &tmpVertex.x, &tmpVertex.y, &tmpVertex.z);
-				tmpBucket.values[tmpBucketVertexCount++] = tmpVertex;
+				tmpBucket.values[tmpVertexInBucketCount++] = tmpVertex;
+				++tmpVertexCount;
 
-				if (tmpBucketVertexCount == BUCKET_VERTEX_COUNT)
+				if (tmpVertexInBucketCount == BUCKET_VERTEX_COUNT)
 				{
-					tmpBucketVertexCount = 0;
-					++tmpBucketCount;
+					bucketVertexIterator = tmpModel.vertexBuckets->emplace(bucketVertexIterator, tmpBucket);
+					tmpVertexInBucketCount = 0;
 				}
+
 			}
 			else if (result == NULL)
 			{
-				tmpModel.vertexBuckets->push_back(tmpBucket);
+				bucketVertexIterator = tmpModel.vertexBuckets->emplace(bucketVertexIterator, tmpBucket);
 				tmpModel.vertexCount = tmpVertexCount;
-				tmpModel.vertexBucketCount = tmpBucketCount;
+				tmpModel.bucketCount = tmpModel.vertexBuckets->size();
 
 				data->models[data->modelCount++] = tmpModel;
 
 				tmpVertexCount = 0;
-				tmpBucketVertexCount = 0;
-				tmpBucketCount = 1;
+				tmpVertexInBucketCount = 0;
 
 				eofReached = true;
 
@@ -109,6 +108,7 @@ public:
 		}
 
 		delete (file);
+		return data;
 	}
 #pragma warning(pop)
 
